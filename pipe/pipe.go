@@ -41,11 +41,13 @@ var TL = TaskList[Pipe]{
 }
 
 func New(p *Plumber) *TaskList[Pipe] {
-	return TL.New(p).SetTasks(
-		TL.JobSequence(
-			Tasks(&TL).Job(),
-			Services(&TL).Job(),
-			HealthCheck(&TL).Job(),
-			TL.JobWaitForTerminator(),
-		))
+	return TL.New(p).Set(
+		func(tl *TaskList[Pipe]) Job {
+			return tl.JobSequence(
+				Tasks(tl).Job(),
+				Services(tl).Job(),
+				HealthCheck(tl).Job(),
+				tl.JobWaitForTerminator(),
+			)
+		})
 }

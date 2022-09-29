@@ -24,11 +24,6 @@ func RunSeafDaemon(tl *TaskList[Pipe]) *Task[Pipe] {
 				path.Join(t.Pipe.Seafile.DataLocation, "ccnet"),
 			).
 				EnableTerminator().
-				SetOnTerminator(func(c *Command[Pipe]) error {
-					t.Plumber.SendTerminated()
-
-					return nil
-				}).
 				SetLogLevel(LOG_LEVEL_DEBUG, LOG_LEVEL_DEBUG, LOG_LEVEL_DEBUG).
 				AddSelfToTheTask()
 
@@ -89,11 +84,6 @@ func RunSeafileClient(tl *TaskList[Pipe]) *Task[Pipe] {
 							).
 								SetLogLevel(LOG_LEVEL_DEFAULT, LOG_LEVEL_DEFAULT, LOG_LEVEL_DEFAULT).
 								EnableTerminator().
-								SetOnTerminator(func(c *Command[Pipe]) error {
-									t.Plumber.SendTerminated()
-
-									return nil
-								}).
 								AddSelfToTheTask()
 
 							return nil

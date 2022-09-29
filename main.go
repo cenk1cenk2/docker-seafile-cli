@@ -23,7 +23,7 @@ func main() {
 				Description: DESCRIPTION,
 				Flags:       p.AppendFlags(pipe.Flags),
 				Before: func(ctx *cli.Context) error {
-					p.EnableTerminator().SetTerminatorCount(2)
+					p.EnableTerminator()
 
 					return nil
 				},
