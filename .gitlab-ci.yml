@@ -25,4 +25,4 @@ build-docker-image:
   only:
     refs:
       - schedules
-      - master
+      - main
