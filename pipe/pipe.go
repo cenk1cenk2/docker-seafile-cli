@@ -21,8 +21,9 @@ type (
 		Password string
 	}
 
-	Libraries struct {
+	Seafile struct {
 		MountLocation string `validate:"dir"`
+		DataLocation  string `validate:"dir"`
 	}
 
 	Pipe struct {
@@ -31,7 +32,7 @@ type (
 		Health
 		Server
 		Credentials
-		Libraries
+		Seafile
 	}
 )
 

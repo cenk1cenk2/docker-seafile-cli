@@ -44,7 +44,7 @@ clean:
 build: build-linux-amd64
 
 build-linux-amd64:
-	CGO_ENABLED=$(GO_OPTION_C) GOOS=linux GOARCH=amd64 $(GO_BUILD) -mod=readonly -o $(BINARY_FOLDER)/$(BINARY_NAME)-linux-amd64
+	CGO_ENABLED=$(GO_OPTION_C) GOOS=linux GOARCH=amd64 $(GO_BUILD) -mod=readonly -o $(BINARY_FOLDER)/$(BINARY_NAME)
 
 build-docker:
 	docker-compose build

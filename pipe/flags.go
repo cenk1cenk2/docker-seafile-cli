@@ -12,7 +12,7 @@ const (
 	category_health      = "Health"
 	category_server      = "Server"
 	category_credentials = "Credentials"
-	category_libraries   = "Libraries"
+	category_seafile     = "Seafile"
 )
 
 var Flags = []cli.Flag{
@@ -24,7 +24,7 @@ var Flags = []cli.Flag{
 		Usage:       "Health check interval for processes.",
 		Required:    false,
 		EnvVars:     []string{"HEALTH_CHECK_INTERVAL"},
-		Value:       10 * time.Minute,
+		Value:       5 * time.Minute,
 		Destination: &TL.Pipe.Health.CheckInterval,
 	},
 
@@ -34,7 +34,7 @@ var Flags = []cli.Flag{
 		Usage:       "Interval for outputting current status.",
 		Required:    false,
 		EnvVars:     []string{"HEALTH_STATUS_INTERVAL"},
-		Value:       time.Minute,
+		Value:       time.Hour,
 		Destination: &TL.Pipe.Health.StatusInterval,
 	},
 
@@ -66,18 +66,28 @@ var Flags = []cli.Flag{
 		Usage:       "Password of the user that owns the libraries.",
 		Required:    true,
 		EnvVars:     []string{"PASSWORD"},
-		Destination: &TL.Pipe.Credentials.Username,
+		Destination: &TL.Pipe.Credentials.Password,
 	},
 
 	// category_libraries
 
 	&cli.StringFlag{
-		Category:    category_libraries,
-		Name:        "libraries.mount-location",
+		Category:    category_seafile,
+		Name:        "seafile.mount-location",
 		Usage:       "Mount location for the libraries.",
 		Required:    false,
 		Value:       "/data",
-		EnvVars:     []string{"LIBRARIES_MOUNT_LOCATION"},
-		Destination: &TL.Pipe.Libraries.MountLocation,
+		EnvVars:     []string{"SEAFILE_MOUNT_LOCATION"},
+		Destination: &TL.Pipe.Seafile.MountLocation,
+	},
+
+	&cli.StringFlag{
+		Category:    category_seafile,
+		Name:        "seafile.data-location",
+		Usage:       "Mount location for the data.",
+		Required:    false,
+		Value:       "/seafile",
+		EnvVars:     []string{"SEAFILE_DATA_LOCATION"},
+		Destination: &TL.Pipe.Seafile.DataLocation,
 	},
 }

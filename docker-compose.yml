@@ -1,8 +1,11 @@
 version: "3.7"
 services:
-  softether-vpnsrv:
+  seafile-cli:
     image: cenk1cenk2/seafile-cli:test
     build:
       context: .
       dockerfile: Dockerfile
     env_file: .env
+    volumes:
+      - ./volumes/test/:/data/df535a2b-f663-4ee2-a690-1feb8bb792a3/
+      - ./volumes/seafile:/seafile

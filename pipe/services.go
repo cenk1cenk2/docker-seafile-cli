@@ -1,8 +1,8 @@
 package pipe
 
 import (
-	"fmt"
 	"path"
+	"time"
 
 	. "gitlab.kilic.dev/libraries/plumber/v4"
 )
@@ -10,15 +10,26 @@ import (
 func Services(tl *TaskList[Pipe]) *Task[Pipe] {
 	return tl.CreateTask("services", "parent").
 		SetJobWrapper(func(job Job) Job {
-			return TL.JobSequence(RunSeafDaemon(tl).Job(), RunSeafileClient(tl).Job())
+			return tl.JobSequence(RunSeafDaemon(tl).Job(), tl.JobDelay(RunSeafileClient(tl).Job(), time.Second*3))
 		})
 }
 
 func RunSeafDaemon(tl *TaskList[Pipe]) *Task[Pipe] {
 	return tl.CreateTask("seaf-daemon").
 		Set(func(t *Task[Pipe]) error {
-			t.CreateCommand("seaf-daemon").
+			t.CreateCommand(
+				SEAFILE_CLI_EXE,
+				"start",
+				"-c",
+				path.Join(t.Pipe.Seafile.DataLocation, "ccnet"),
+			).
 				EnableTerminator().
+				SetOnTerminator(func(c *Command[Pipe]) error {
+					t.Plumber.SendTerminated()
+
+					return nil
+				}).
+				SetLogLevel(LOG_LEVEL_DEBUG, LOG_LEVEL_DEBUG, LOG_LEVEL_DEBUG).
 				AddSelfToTheTask()
 
 			return nil
@@ -41,25 +52,54 @@ func RunSeafileClient(tl *TaskList[Pipe]) *Task[Pipe] {
 				func(library string) {
 					t.CreateSubtask(library).
 						Set(func(t *Task[Pipe]) error {
+							// desync first
+							t.CreateCommand(
+								SEAFILE_CLI_EXE,
+								"desync",
+								"-d",
+								path.Join(
+									t.Pipe.Seafile.MountLocation,
+									library,
+								),
+								"-c",
+								path.Join(t.Pipe.Seafile.DataLocation, "ccnet"),
+							).
+								SetLogLevel(LOG_LEVEL_DEBUG, LOG_LEVEL_DEBUG, LOG_LEVEL_DEBUG).
+								AddSelfToTheTask()
+
+								// sync
 							t.CreateCommand(
 								SEAFILE_CLI_EXE,
 								"sync",
+								"-s",
+								t.Pipe.Server.Url,
+								"-u",
+								t.Pipe.Credentials.Username,
+								"-p",
+								t.Pipe.Credentials.Password,
 								"-l",
 								library,
 								"-d",
 								path.Join(
-									t.Pipe.Libraries.MountLocation,
+									t.Pipe.Seafile.MountLocation,
 									library,
 								),
-								"-u",
-								fmt.Sprintf("'%s'", t.Pipe.Credentials.Username),
-								"-p",
-								fmt.Sprintf("'%s'", t.Pipe.Credentials.Password),
+								"-c",
+								path.Join(t.Pipe.Seafile.DataLocation, "ccnet"),
 							).
+								SetLogLevel(LOG_LEVEL_DEFAULT, LOG_LEVEL_DEFAULT, LOG_LEVEL_DEFAULT).
 								EnableTerminator().
+								SetOnTerminator(func(c *Command[Pipe]) error {
+									t.Plumber.SendTerminated()
+
+									return nil
+								}).
 								AddSelfToTheTask()
 
 							return nil
+						}).
+						ShouldRunAfter(func(t *Task[Pipe]) error {
+							return t.RunCommandJobAsJobSequence()
 						}).
 						AddSelfToTheParentAsParallel()
 				}(library)

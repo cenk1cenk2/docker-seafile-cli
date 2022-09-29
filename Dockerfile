@@ -11,4 +11,12 @@ RUN \
   apt-get install -y seafile-cli procps curl grep && \
   rm -rf /var/lib/apt/lists/*
 
-ENTRYPOINT ["tini", "pipe"]
+COPY ./dist/pipe /usr/bin/pipe
+
+RUN chmod +x /usr/bin/pipe && \
+  # smoke test
+  pipe --help
+
+WORKDIR /data
+
+ENTRYPOINT [ "tini", "pipe" ]

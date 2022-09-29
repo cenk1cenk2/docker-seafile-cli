@@ -5,7 +5,7 @@ go 1.19
 require (
 	github.com/mitchellh/go-ps v1.0.0
 	github.com/urfave/cli/v2 v2.17.1
-	gitlab.kilic.dev/libraries/plumber/v4 v4.0.1
+	gitlab.kilic.dev/libraries/plumber/v4 v4.3.0
 )
 
 require (
@@ -20,7 +20,7 @@ require (
 	github.com/sirupsen/logrus v1.9.0 // indirect
 	github.com/workanator/go-floc/v3 v3.0.1 // indirect
 	github.com/xrash/smetrics v0.0.0-20201216005158-039620a65673 // indirect
-	gitlab.kilic.dev/libraries/go-utils v1.1.2 // indirect
+	gitlab.kilic.dev/libraries/go-utils v1.2.5 // indirect
 	golang.org/x/crypto v0.0.0-20220926161630-eccd6366d1be // indirect
 	golang.org/x/exp v0.0.0-20220929160808-de9c53c655b9 // indirect
 	golang.org/x/sys v0.0.0-20220928140112-f11e5e49a4ec // indirect

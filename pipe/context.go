@@ -2,8 +2,7 @@ package pipe
 
 type Ctx struct {
 	Health struct {
-		SeafDaemonPID int
-		CcnetPID      int
+		SeafDaemonPID []int
 	}
 
 	Libraries []string

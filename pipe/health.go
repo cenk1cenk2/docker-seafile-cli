@@ -2,6 +2,7 @@ package pipe
 
 import (
 	"fmt"
+	"path"
 
 	"github.com/mitchellh/go-ps"
 	. "gitlab.kilic.dev/libraries/plumber/v4"
@@ -10,11 +11,10 @@ import (
 func HealthCheck(tl *TaskList[Pipe]) *Task[Pipe] {
 	return tl.CreateTask("health", "parent").
 		SetJobWrapper(func(job Job) Job {
-			return TL.JobSequence(
+			return tl.JobSequence(
 				job,
-				TL.JobParallel(
+				tl.JobParallel(
 					HealthCheckSeafDaemon(tl).Job(),
-					HealthCheckCcnet(tl).Job(),
 					HealthCheckStatus(tl).Job(),
 				),
 			)
@@ -28,12 +28,9 @@ func HealthCheck(tl *TaskList[Pipe]) *Task[Pipe] {
 
 			for _, process := range processes {
 				switch process.Executable() {
-				case "seaf-daemon":
-					t.Pipe.Ctx.Health.SeafDaemonPID = process.Pid()
-					t.Log.Debugf("Seafile Daemon PID set: %d", t.Pipe.Ctx.Health.SeafDaemonPID)
-				case "ccnet":
-					t.Pipe.Ctx.Health.CcnetPID = process.Pid()
-					t.Log.Debugf("CCNet PID set: %d", t.Pipe.Ctx.Health.CcnetPID)
+				case "seaf-cli":
+					t.Pipe.Ctx.Health.SeafDaemonPID = append(t.Pipe.Ctx.Health.SeafDaemonPID, process.Pid())
+					t.Log.Debugf("Seafile Daemon PID set: %s", t.Pipe.Ctx.Health.SeafDaemonPID)
 				}
 			}
 
@@ -47,47 +44,22 @@ func HealthCheckSeafDaemon(tl *TaskList[Pipe]) *Task[Pipe] {
 			return tl.JobBackground(tl.JobLoopWithWaitAfter(job, tl.Pipe.Health.CheckInterval))
 		}).
 		Set(func(t *Task[Pipe]) error {
-			process, err := ps.FindProcess(t.Pipe.Ctx.Health.SeafDaemonPID)
+			for _, pid := range t.Pipe.Ctx.Health.SeafDaemonPID {
+				process, err := ps.FindProcess(pid)
 
-			if err != nil {
-				t.Log.Debugln(err)
-			}
+				if err != nil {
+					t.Log.Debugln(err)
+				}
 
-			if process == nil {
-				t.SendFatal(fmt.Errorf("Seafile Daemon process is not alive."))
+				if process == nil {
+					t.SendFatal(fmt.Errorf("Seafile Daemon process is not alive."))
 
-				return nil
+					return nil
+				}
 			}
 
 			t.Log.Debugf(
 				"Next Seafile Daemon process health check in: %s",
-				t.Pipe.Health.CheckInterval.String(),
-			)
-
-			return nil
-		})
-}
-
-func HealthCheckCcnet(tl *TaskList[Pipe]) *Task[Pipe] {
-	return tl.CreateTask("health", "ccnet").
-		SetJobWrapper(func(job Job) Job {
-			return tl.JobBackground(tl.JobLoopWithWaitAfter(job, tl.Pipe.Health.CheckInterval))
-		}).
-		Set(func(t *Task[Pipe]) error {
-			process, err := ps.FindProcess(t.Pipe.Ctx.Health.CcnetPID)
-
-			if err != nil {
-				t.Log.Debugln(err)
-			}
-
-			if process == nil {
-				t.SendFatal(fmt.Errorf("CCNet process is not alive."))
-
-				return nil
-			}
-
-			t.Log.Debugf(
-				"Next CCNet process health check in: %s",
 				t.Pipe.Health.CheckInterval.String(),
 			)
 
@@ -104,7 +76,10 @@ func HealthCheckStatus(tl *TaskList[Pipe]) *Task[Pipe] {
 			t.CreateCommand(
 				SEAFILE_CLI_EXE,
 				"status",
+				"-c",
+				path.Join(t.Pipe.Seafile.DataLocation, "ccnet"),
 			).
+				SetLogLevel(LOG_LEVEL_DEBUG, LOG_LEVEL_DEBUG, LOG_LEVEL_DEBUG).
 				AddSelfToTheTask()
 
 			return nil
