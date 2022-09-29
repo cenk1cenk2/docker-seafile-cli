@@ -1,0 +1,28 @@
+---
+stages:
+  - install
+  - build
+  - docker
+  - post
+
+variables:
+  DOCKER_IMAGE_NAME: cenk1cenk2/seafile-cli
+  IMAGE_TAGS: latest
+  README_DESCRIPTION: |
+    Seafile client constantly syncing through the CLI.
+
+include:
+  - project: devops/pipes
+    file: /templates/go.gitlab-ci.yml
+
+  - project: devops/pipes
+    file: /templates/docker-build-dockerhub.gitlab-ci.yml
+
+  - project: devops/pipes
+    file: /templates/update-docker-hub-readme.gitlab-ci.yml
+
+build-docker-image:
+  only:
+    refs:
+      - schedules
+      - master
