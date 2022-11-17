@@ -10,7 +10,7 @@ variables:
   DOCKER_IMAGE_NAME: cenk1cenk2/seafile-cli
   IMAGE_TAGS: latest
   README_DESCRIPTION: |
-    Seafile client inside a Docker container that can synchronize multiple libraries for the given user credentials.
+    Seafile client inside a Docker container that can continuously synchronize multiple libraries.
 
 include:
   - project: devops/pipes
