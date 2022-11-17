@@ -10,7 +10,8 @@ Initiates the Seafile Client Daemon that will run in this container.
 
 | Flag / Environment |  Description   |  Type    | Required | Default |
 |---------------- | --------------- | --------------- |  --------------- |  --------------- |
-| `$LOG_LEVEL` | Define the log level for the application.  | `String`<br/>enum(&#34;PANIC&#34;, &#34;FATAL&#34;, &#34;WARNING&#34;, &#34;INFO&#34;, &#34;DEBUG&#34;, &#34;TRACE&#34;) | `false` | &#34;info&#34; |
+| `$LOG_LEVEL` | Define the log level for the application.  | `String`<br/>`enum("PANIC", "FATAL", "WARNING", "INFO", "DEBUG", "TRACE")` | `false` | info |
+| `$ENV_FILE` | Environment files to inject. | `StringSlice` | `false` |  |
 
 ### Credentials
 
@@ -23,15 +24,15 @@ Initiates the Seafile Client Daemon that will run in this container.
 
 | Flag / Environment |  Description   |  Type    | Required | Default |
 |---------------- | --------------- | --------------- |  --------------- |  --------------- |
-| `$HEALTH_CHECK_INTERVAL` | Health check interval for processes. | `Duration` | `false` | 5m0s |
-| `$HEALTH_STATUS_INTERVAL` | Interval for outputting current status. | `Duration` | `false` | 1h0m0s |
+| `$HEALTH_CHECK_INTERVAL` | Health check interval for processes. | `Duration` | `false` | 10m |
+| `$HEALTH_STATUS_INTERVAL` | Interval for outputting current status. | `Duration` | `false` | 1h |
 
 ### Seafile
 
 | Flag / Environment |  Description   |  Type    | Required | Default |
 |---------------- | --------------- | --------------- |  --------------- |  --------------- |
-| `$SEAFILE_MOUNT_LOCATION` | Mount location for the libraries. | `String` | `false` | &#34;/data&#34; |
-| `$SEAFILE_DATA_LOCATION` | Mount location for the data. | `String` | `false` | &#34;/seafile&#34; |
+| `$SEAFILE_MOUNT_LOCATION` | Mount location for the libraries. | `String` | `false` | /data |
+| `$SEAFILE_DATA_LOCATION` | Mount location for the data. | `String` | `false` | /seafile |
 
 ### Server
 

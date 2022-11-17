@@ -24,7 +24,8 @@ var Flags = []cli.Flag{
 		Usage:       "Health check interval for processes.",
 		Required:    false,
 		EnvVars:     []string{"HEALTH_CHECK_INTERVAL"},
-		Value:       5 * time.Minute,
+		DefaultText: "10m",
+		Value:       10 * time.Minute,
 		Destination: &TL.Pipe.Health.CheckInterval,
 	},
 
@@ -34,6 +35,7 @@ var Flags = []cli.Flag{
 		Usage:       "Interval for outputting current status.",
 		Required:    false,
 		EnvVars:     []string{"HEALTH_STATUS_INTERVAL"},
+		DefaultText: "1h",
 		Value:       time.Hour,
 		Destination: &TL.Pipe.Health.StatusInterval,
 	},

@@ -60,7 +60,7 @@ func InitSeafile(tl *TaskList[Pipe]) *Task[Pipe] {
 		}).
 		ShouldRunAfter(func(t *Task[Pipe]) error {
 			if err := t.RunCommandJobAsJobSequence(); err != nil {
-				t.Log.Debugf("%w", err)
+				t.Log.Debugln(err.Error())
 			}
 
 			return nil
