@@ -98,7 +98,7 @@ func Setup(tl *TaskList[Pipe]) *Task[Pipe] {
 						ShouldRunAfter(func(c *Command[Pipe]) error {
 							stdout := c.GetStdoutStream()
 
-							t.Log.Infoln("Usable libraries: %s", strings.Join(stdout, "\n"))
+							t.Log.Infof("Usable libraries: %s", strings.Join(stdout, "\n"))
 
 							return nil
 						}).
