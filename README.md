@@ -9,7 +9,17 @@ Seafile client inside a Docker container that can synchronize multiple libraries
 ---
 
 - [CLI Documentation](./CLI.md)
+
 <!-- toc -->
+
+- [Setup](#setup)
+- [Environment Variables](#environment-variables)
+  - [CLI](#cli)
+  - [Credentials](#credentials)
+  - [Health](#health)
+  - [Seafile](#seafile)
+  - [Server](#server)
+- [Deploy](#deploy)
 
 <!-- tocstop -->
 
