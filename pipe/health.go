@@ -30,7 +30,7 @@ func HealthCheck(tl *TaskList[Pipe]) *Task[Pipe] {
 				switch process.Executable() {
 				case "seaf-cli":
 					t.Pipe.Ctx.Health.SeafDaemonPID = append(t.Pipe.Ctx.Health.SeafDaemonPID, process.Pid())
-					t.Log.Debugf("Seafile Daemon PID set: %s", t.Pipe.Ctx.Health.SeafDaemonPID)
+					t.Log.Debugf("Seafile Daemon PID set: %w", t.Pipe.Ctx.Health.SeafDaemonPID)
 				}
 			}
 
