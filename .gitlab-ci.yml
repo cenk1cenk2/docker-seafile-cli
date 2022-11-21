@@ -6,7 +6,6 @@ stages:
   - post
 
 variables:
-  GO_LINT_COMMAND: make lint
   DOCKER_IMAGE_NAME: cenk1cenk2/seafile-cli
   IMAGE_TAGS: latest
   README_DESCRIPTION: |
