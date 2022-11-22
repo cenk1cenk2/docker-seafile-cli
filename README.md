@@ -31,11 +31,13 @@ Mount your libraries to `$SEAFILE_MOUNT_LOCATION` in subfolders with the library
 
 ## Environment Variables
 
+<!-- clidocs -->
+
 ### CLI
 
 | Flag / Environment | Description                               | Type                                                                       | Required | Default |
 | ------------------ | ----------------------------------------- | -------------------------------------------------------------------------- | -------- | ------- |
-| `$LOG_LEVEL`       | Define the log level for the application. | `String`<br/>`enum("PANIC", "FATAL", "WARNING", "INFO", "DEBUG", "TRACE")` | `false`  | info    |
+| `$LOG_LEVEL`       | Define the log level for the application. | `String`<br/>`enum("panic", "fatal", "warning", "info", "debug", "trace")` | `false`  | info    |
 | `$ENV_FILE`        | Environment files to inject.              | `StringSlice`                                                              | `false`  |         |
 
 ### Credentials
@@ -64,6 +66,8 @@ Mount your libraries to `$SEAFILE_MOUNT_LOCATION` in subfolders with the library
 | Flag / Environment | Description                               | Type     | Required | Default |
 | ------------------ | ----------------------------------------- | -------- | -------- | ------- |
 | `$SERVER_URL`      | External url of the given Seafile server. | `String` | `true`   |         |
+
+<!-- clidocsstop -->
 
 ## Deploy
 
