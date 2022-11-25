@@ -27,6 +27,7 @@ docker-build:
   parallel:
     matrix:
       - DOCKERFILE_NAME: Dockerfile
+        DOCKER_IMAGE_NAME: $DOCKER_IMAGE_NAME
         DOCKER_IMAGE_TAGS: latest-${GITLAB_CI_ARCH}
         DOCKER_MANIFEST_TARGET: latest
         GITLAB_CI_ARCH:
@@ -49,6 +50,7 @@ update-docker-hub-readme:
   stage: post
   extends: .update-docker-hub-readme
   variables:
+    DOCKER_IMAGE_NAME: $DOCKER_IMAGE_NAME
     README_DESCRIPTION: |
       Seafile client inside a Docker container that can continuously synchronize multiple libraries.
   only:
