@@ -1,4 +1,8 @@
+# syntax=docker/dockerfile-upstream:master-labs
 FROM debian:bullseye-slim
+
+ARG BUILDOS
+ARG BUILDARCH
 
 RUN \
   apt-get update && \
@@ -11,9 +15,9 @@ RUN \
   apt-get install -y seafile-cli procps curl grep && \
   rm -rf /var/lib/apt/lists/*
 
-COPY ./dist/pipe /usr/bin/pipe
+COPY --chmod=777 ./dist/pipe-${BUILDOS}-${BUILDARCH} /usr/bin/pipe
 
-RUN chmod +x /usr/bin/pipe && \
+RUN \
   # smoke test
   pipe --help
 
