@@ -4,7 +4,7 @@ go 1.19
 
 require (
 	github.com/mitchellh/go-ps v1.0.0
-	github.com/urfave/cli/v2 v2.23.6
+	github.com/urfave/cli/v2 v2.23.7
 	gitlab.kilic.dev/libraries/plumber/v4 v4.30.2
 )
 
