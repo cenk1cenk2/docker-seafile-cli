@@ -32,6 +32,8 @@ docker-build:
         GITLAB_CI_ARCH:
           - amd64
           - arm64
+  dependencies:
+    - build
   only:
     refs:
       - schedules
@@ -40,6 +42,8 @@ docker-build:
 docker-manifest:
   stage: post
   extends: .docker-manifest-dockerhub
+  dependencies:
+    - docker-build
   only:
     refs:
       - schedules
@@ -51,6 +55,7 @@ update-docker-hub-readme:
   variables:
     README_DESCRIPTION: |
       Seafile client inside a Docker container that can continuously synchronize multiple libraries.
+  dependencies: []
   only:
     refs:
       - schedules
