@@ -1,6 +1,6 @@
 module gitlab.kilic.dev/docker/seafile-cli
 
-go 1.21
+go 1.21.3
 
 require (
 	github.com/mitchellh/go-ps v1.0.0
