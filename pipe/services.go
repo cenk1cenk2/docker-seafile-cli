@@ -4,12 +4,12 @@ import (
 	"path"
 	"time"
 
-	. "gitlab.kilic.dev/libraries/plumber/v4"
+	. "gitlab.kilic.dev/libraries/plumber/v5"
 )
 
 func Services(tl *TaskList[Pipe]) *Task[Pipe] {
 	return tl.CreateTask("services", "parent").
-		SetJobWrapper(func(job Job) Job {
+		SetJobWrapper(func(job Job, t *Task[Pipe]) Job {
 			return tl.JobSequence(RunSeafDaemon(tl).Job(), tl.JobDelay(RunSeafileClient(tl).Job(), time.Second*3))
 		})
 }
