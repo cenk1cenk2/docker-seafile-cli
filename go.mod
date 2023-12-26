@@ -4,7 +4,7 @@ go 1.21.5
 
 require (
 	github.com/mitchellh/go-ps v1.0.0
-	github.com/urfave/cli/v2 v2.26.0
+	github.com/urfave/cli/v2 v2.27.0
 	gitlab.kilic.dev/libraries/plumber/v5 v5.4.2
 )
 
