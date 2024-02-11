@@ -10,7 +10,7 @@ import (
 
 func HealthCheck(tl *TaskList[Pipe]) *Task[Pipe] {
 	return tl.CreateTask("health", "parent").
-		SetJobWrapper(func(job Job, t *Task[Pipe]) Job {
+		SetJobWrapper(func(job Job, _ *Task[Pipe]) Job {
 			return tl.JobSequence(
 				job,
 				tl.JobParallel(
@@ -40,7 +40,7 @@ func HealthCheck(tl *TaskList[Pipe]) *Task[Pipe] {
 
 func HealthCheckSeafDaemon(tl *TaskList[Pipe]) *Task[Pipe] {
 	return tl.CreateTask("health", "seaf-daemon").
-		SetJobWrapper(func(job Job, t *Task[Pipe]) Job {
+		SetJobWrapper(func(job Job, _ *Task[Pipe]) Job {
 			return tl.JobBackground(tl.JobLoopWithWaitAfter(job, tl.Pipe.Health.CheckInterval))
 		}).
 		Set(func(t *Task[Pipe]) error {
@@ -69,7 +69,7 @@ func HealthCheckSeafDaemon(tl *TaskList[Pipe]) *Task[Pipe] {
 
 func HealthCheckStatus(tl *TaskList[Pipe]) *Task[Pipe] {
 	return tl.CreateTask("health", "status").
-		SetJobWrapper(func(job Job, t *Task[Pipe]) Job {
+		SetJobWrapper(func(job Job, _ *Task[Pipe]) Job {
 			return tl.JobBackground(tl.JobLoopWithWaitAfter(job, tl.Pipe.StatusInterval))
 		}).
 		Set(func(t *Task[Pipe]) error {

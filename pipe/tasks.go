@@ -11,7 +11,7 @@ import (
 
 func Tasks(tl *TaskList[Pipe]) *Task[Pipe] {
 	return tl.CreateTask("tasks", "parent").
-		SetJobWrapper(func(job Job, t *Task[Pipe]) Job {
+		SetJobWrapper(func(_ Job, _ *Task[Pipe]) Job {
 			return tl.JobSequence(
 				Secrets(tl).Job(),
 				InitSeafile(tl).Job(),
