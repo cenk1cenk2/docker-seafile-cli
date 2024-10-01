@@ -1,11 +1,11 @@
 module gitlab.kilic.dev/docker/seafile-cli
 
-go 1.23.1
+go 1.23.2
 
 require (
 	github.com/mitchellh/go-ps v1.0.0
 	github.com/urfave/cli/v2 v2.27.4
-	gitlab.kilic.dev/libraries/plumber/v5 v5.6.1
+	gitlab.kilic.dev/libraries/plumber/v5 v5.6.3
 )
 
 require (
