@@ -33,35 +33,35 @@ Mount your libraries to `$SEAFILE_MOUNT_LOCATION` in subfolders with the library
 
 <!-- clidocs -->
 
-### CLI
+**CLI**
 
 | Flag / Environment |  Description   |  Type    | Required | Default |
 |---------------- | --------------- | --------------- |  --------------- |  --------------- |
 | `$LOG_LEVEL` | Define the log level for the application. | `String`<br/>`enum("panic", "fatal", "warn", "info", "debug", "trace")` | `false` | info |
 | `$ENV_FILE` | Environment files to inject. | `StringSlice` | `false` |  |
 
-### Credentials
+**Credentials**
 
 | Flag / Environment |  Description   |  Type    | Required | Default |
 |---------------- | --------------- | --------------- |  --------------- |  --------------- |
 | `$USERNAME` | Email address of the user that owns the libraries. | `String` | `true` |  |
 | `$PASSWORD` | Password of the user that owns the libraries. | `String` | `true` |  |
 
-### Health
+**Health**
 
 | Flag / Environment |  Description   |  Type    | Required | Default |
 |---------------- | --------------- | --------------- |  --------------- |  --------------- |
-| `$HEALTH_CHECK_INTERVAL` | Health check interval for processes. | `Duration` | `false` | 10m |
-| `$HEALTH_STATUS_INTERVAL` | Interval for outputting current status. | `Duration` | `false` | 1h |
+| `$HEALTH_CHECK_INTERVAL` | Health check interval for processes. | `Duration` | `false` | 10m0s |
+| `$HEALTH_STATUS_INTERVAL` | Interval for outputting current status. | `Duration` | `false` | 1h0m0s |
 
-### Seafile
+**Seafile**
 
 | Flag / Environment |  Description   |  Type    | Required | Default |
 |---------------- | --------------- | --------------- |  --------------- |  --------------- |
 | `$SEAFILE_MOUNT_LOCATION` | Mount location for the libraries. | `String` | `false` | /data |
 | `$SEAFILE_DATA_LOCATION` | Mount location for the data. | `String` | `false` | /seafile |
 
-### Server
+**Server**
 
 | Flag / Environment |  Description   |  Type    | Required | Default |
 |---------------- | --------------- | --------------- |  --------------- |  --------------- |

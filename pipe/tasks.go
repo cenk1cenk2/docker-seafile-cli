@@ -1,7 +1,6 @@
 package pipe
 
 import (
-	"fmt"
 	"os"
 	"path"
 	"strings"
@@ -23,7 +22,14 @@ func Tasks(tl *TaskList[Pipe]) *Task[Pipe] {
 func Secrets(tl *TaskList[Pipe]) *Task[Pipe] {
 	return tl.CreateTask("secrets").
 		Set(func(t *Task[Pipe]) error {
-			t.Plumber.AppendSecrets(t.Pipe.Credentials.Username, t.Pipe.Credentials.Password)
+			t.Plumber.AppendSecrets(t.Pipe.Credentials.Username)
+
+			if t.Pipe.Credentials.Password != "" {
+				t.Plumber.AppendSecrets(t.Pipe.Credentials.Password)
+			}
+			if t.Pipe.Credentials.Token != "" {
+				t.Plumber.AppendSecrets(t.Pipe.Credentials.Token)
+			}
 
 			return nil
 		})
@@ -80,32 +86,6 @@ func Setup(tl *TaskList[Pipe]) *Task[Pipe] {
 				if file.IsDir() {
 					t.Pipe.Ctx.Libraries = append(t.Pipe.Ctx.Libraries, file.Name())
 				}
-			}
-
-			if len(t.Pipe.Ctx.Libraries) == 0 {
-				t.SendError(
-					t.CreateCommand(
-						SEAFILE_CLI_EXE,
-						"list-remote",
-						"-s",
-						t.Pipe.Server.Url,
-						"-u",
-						t.Pipe.Credentials.Username,
-						"-p",
-						t.Pipe.Credentials.Password,
-					).
-						EnableStreamRecording().
-						ShouldRunAfter(func(c *Command[Pipe]) error {
-							stdout := c.GetStdoutStream()
-
-							t.Log.Infof("Usable libraries: %s", strings.Join(stdout, "\n"))
-
-							return nil
-						}).
-						Run(),
-				)
-
-				return fmt.Errorf("Please mount your libraries as folders to: %s", t.Pipe.Seafile.MountLocation)
 			}
 
 			t.Log.Infof("Discovered libraries: %s", strings.Join(t.Pipe.Ctx.Libraries, ", "))

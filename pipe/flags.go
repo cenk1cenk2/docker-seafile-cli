@@ -66,9 +66,18 @@ var Flags = []cli.Flag{
 		Category:    category_credentials,
 		Name:        "credentials.password",
 		Usage:       "Password of the user that owns the libraries.",
-		Required:    true,
+		Required:    false,
 		EnvVars:     []string{"PASSWORD"},
 		Destination: &TL.Pipe.Credentials.Password,
+	},
+
+	&cli.StringFlag{
+		Category:    category_credentials,
+		Name:        "credentials.token",
+		Usage:       "Token of the user that owns the libraries.",
+		Required:    false,
+		EnvVars:     []string{"TOKEN"},
+		Destination: &TL.Pipe.Credentials.Token,
 	},
 
 	// category_libraries

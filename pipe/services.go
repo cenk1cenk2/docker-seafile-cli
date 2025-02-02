@@ -68,10 +68,6 @@ func RunSeafileClient(tl *TaskList[Pipe]) *Task[Pipe] {
 								"sync",
 								"-s",
 								t.Pipe.Server.Url,
-								"-u",
-								t.Pipe.Credentials.Username,
-								"-p",
-								t.Pipe.Credentials.Password,
 								"-l",
 								library,
 								"-d",
@@ -81,7 +77,18 @@ func RunSeafileClient(tl *TaskList[Pipe]) *Task[Pipe] {
 								),
 								"-c",
 								path.Join(t.Pipe.Seafile.DataLocation, "ccnet"),
+								"-u",
+								t.Pipe.Credentials.Username,
 							).
+								Set(func(c *Command[Pipe]) error {
+									if t.Pipe.Credentials.Token != "" {
+										c.AppendArgs("-T", t.Pipe.Credentials.Token)
+									} else if t.Pipe.Credentials.Password != "" {
+										c.AppendArgs("-p", t.Pipe.Credentials.Password)
+									}
+
+									return nil
+								}).
 								SetLogLevel(LOG_LEVEL_DEFAULT, LOG_LEVEL_DEFAULT, LOG_LEVEL_DEFAULT).
 								EnableTerminator().
 								AddSelfToTheTask()

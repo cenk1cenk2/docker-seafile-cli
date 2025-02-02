@@ -18,7 +18,8 @@ type (
 
 	Credentials struct {
 		Username string
-		Password string
+		Password string `validate:"required_without=Token"`
+		Token    string `validate:"required_without=Password"`
 	}
 
 	Seafile struct {

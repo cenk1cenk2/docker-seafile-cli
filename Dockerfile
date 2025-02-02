@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile-upstream:master-labs
-FROM debian:bullseye-slim
+FROM debian:bookworm-slim
 
 ARG BUILDOS
 ARG BUILDARCH
@@ -11,7 +11,7 @@ RUN \
   apt-get install tini -y && \
   # install seafile client
   wget https://linux-clients.seafile.com/seafile.asc -O /usr/share/keyrings/seafile-keyring.asc && \
-  echo 'deb [arch=amd64 signed-by=/usr/share/keyrings/seafile-keyring.asc] https://linux-clients.seafile.com/seafile-deb/bullseye/ stable main' | tee /etc/apt/sources.list.d/seafile.list && \
+  echo 'deb [arch=amd64 signed-by=/usr/share/keyrings/seafile-keyring.asc] https://linux-clients.seafile.com/seafile-deb/bookworm/ stable main' | tee /etc/apt/sources.list.d/seafile.list && \
   apt-get install -y seafile-cli procps curl grep && \
   rm -rf /var/lib/apt/lists/*
 
