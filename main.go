@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/urfave/cli/v2"
+	"github.com/urfave/cli/v3"
 
 	pipe "gitlab.kilic.dev/docker/seafile-cli/pipe"
 	. "gitlab.kilic.dev/libraries/plumber/v5"
