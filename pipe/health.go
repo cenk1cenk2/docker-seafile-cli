@@ -4,47 +4,31 @@ import (
 	"fmt"
 	"path"
 
+	. "github.com/cenk1cenk2/plumber/v6"
 	"github.com/mitchellh/go-ps"
-	. "gitlab.kilic.dev/libraries/plumber/v5"
 )
 
-func HealthCheck(tl *TaskList[Pipe]) *Task[Pipe] {
+func HealthCheck(tl *TaskList) *Task {
 	return tl.CreateTask("health", "parent").
-		SetJobWrapper(func(job Job, _ *Task[Pipe]) Job {
-			return tl.JobSequence(
-				job,
-				tl.JobParallel(
-					HealthCheckSeafDaemon(tl).Job(),
-					HealthCheckStatus(tl).Job(),
-				),
+		SetJobWrapper(func(job Job, _ *Task) Job {
+			return JobParallel(
+				// HealthCheckSeafDaemon(tl).Job(),
+				HealthCheckStatus(tl).Job(),
 			)
-		}).
-		Set(func(t *Task[Pipe]) error {
-			processes, err := ps.Processes()
-
-			if err != nil {
-				return err
-			}
-
-			for _, process := range processes {
-				switch process.Executable() {
-				case "seaf-cli":
-					t.Pipe.Ctx.Health.SeafDaemonPID = append(t.Pipe.Ctx.Health.SeafDaemonPID, process.Pid())
-					t.Log.Debugf("Seafile Daemon PID set: %+v", t.Pipe.Ctx.Health.SeafDaemonPID)
-				}
-			}
-
-			return nil
 		})
 }
 
-func HealthCheckSeafDaemon(tl *TaskList[Pipe]) *Task[Pipe] {
+func HealthCheckSeafDaemon(tl *TaskList) *Task {
 	return tl.CreateTask("health", "seaf-daemon").
-		SetJobWrapper(func(job Job, _ *Task[Pipe]) Job {
-			return tl.JobBackground(tl.JobLoopWithWaitAfter(job, tl.Pipe.Health.CheckInterval))
+		SetJobWrapper(func(job Job, _ *Task) Job {
+			return JobLoopWithWaitAfter(job, P.Health.CheckInterval)
 		}).
-		Set(func(t *Task[Pipe]) error {
-			for _, pid := range t.Pipe.Ctx.Health.SeafDaemonPID {
+		Set(func(t *Task) error {
+			if len(C.pids) == 0 {
+				return (fmt.Errorf("Seafile Daemon process PID not found."))
+			}
+
+			for _, pid := range C.pids {
 				process, err := ps.FindProcess(pid)
 
 				if err != nil {
@@ -60,38 +44,38 @@ func HealthCheckSeafDaemon(tl *TaskList[Pipe]) *Task[Pipe] {
 
 			t.Log.Debugf(
 				"Next Seafile Daemon process health check in: %s",
-				t.Pipe.Health.CheckInterval.String(),
+				P.Health.CheckInterval.String(),
 			)
 
 			return nil
 		})
 }
 
-func HealthCheckStatus(tl *TaskList[Pipe]) *Task[Pipe] {
+func HealthCheckStatus(tl *TaskList) *Task {
 	return tl.CreateTask("health", "status").
-		SetJobWrapper(func(job Job, _ *Task[Pipe]) Job {
-			return tl.JobBackground(tl.JobLoopWithWaitAfter(job, tl.Pipe.StatusInterval))
+		SetJobWrapper(func(job Job, _ *Task) Job {
+			return JobLoopWithWaitAfter(job, P.Health.StatusInterval)
 		}).
-		Set(func(t *Task[Pipe]) error {
+		Set(func(t *Task) error {
 			t.CreateCommand(
 				SEAFILE_CLI_EXE,
 				"status",
 				"-c",
-				path.Join(t.Pipe.Seafile.DataLocation, "ccnet"),
+				path.Join(P.Seafile.DataLocation, "ccnet"),
 			).
 				SetLogLevel(LOG_LEVEL_DEBUG, LOG_LEVEL_DEBUG, LOG_LEVEL_DEBUG).
 				AddSelfToTheTask()
 
 			return nil
 		}).
-		ShouldRunAfter(func(t *Task[Pipe]) error {
+		ShouldRunAfter(func(t *Task) error {
 			if err := t.RunCommandJobAsJobSequence(); err != nil {
 				return err
 			}
 
 			t.Log.Debugf(
 				"Next status check in: %s",
-				t.Pipe.Health.StatusInterval.String(),
+				P.Health.StatusInterval.String(),
 			)
 
 			return nil

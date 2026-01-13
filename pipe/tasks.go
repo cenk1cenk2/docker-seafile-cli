@@ -5,13 +5,13 @@ import (
 	"path"
 	"strings"
 
-	. "gitlab.kilic.dev/libraries/plumber/v5"
+	. "github.com/cenk1cenk2/plumber/v6"
 )
 
-func Tasks(tl *TaskList[Pipe]) *Task[Pipe] {
+func Tasks(tl *TaskList) *Task {
 	return tl.CreateTask("tasks", "parent").
-		SetJobWrapper(func(_ Job, _ *Task[Pipe]) Job {
-			return tl.JobSequence(
+		SetJobWrapper(func(_ Job, _ *Task) Job {
+			return JobSequence(
 				Secrets(tl).Job(),
 				InitSeafile(tl).Job(),
 				Setup(tl).Job(),
@@ -19,26 +19,26 @@ func Tasks(tl *TaskList[Pipe]) *Task[Pipe] {
 		})
 }
 
-func Secrets(tl *TaskList[Pipe]) *Task[Pipe] {
+func Secrets(tl *TaskList) *Task {
 	return tl.CreateTask("secrets").
-		Set(func(t *Task[Pipe]) error {
-			t.Plumber.AppendSecrets(t.Pipe.Credentials.Username)
+		Set(func(t *Task) error {
+			t.Plumber.AppendSecrets(P.Credentials.Username)
 
-			if t.Pipe.Credentials.Password != "" {
-				t.Plumber.AppendSecrets(t.Pipe.Credentials.Password)
+			if P.Credentials.Password != "" {
+				t.Plumber.AppendSecrets(P.Credentials.Password)
 			}
-			if t.Pipe.Credentials.Token != "" {
-				t.Plumber.AppendSecrets(t.Pipe.Credentials.Token)
+			if P.Credentials.Token != "" {
+				t.Plumber.AppendSecrets(P.Credentials.Token)
 			}
 
 			return nil
 		})
 }
 
-func InitSeafile(tl *TaskList[Pipe]) *Task[Pipe] {
+func InitSeafile(tl *TaskList) *Task {
 	return tl.CreateTask("seafile").
-		Set(func(t *Task[Pipe]) error {
-			files, err := os.ReadDir(t.Pipe.Seafile.DataLocation)
+		Set(func(t *Task) error {
+			files, err := os.ReadDir(P.Seafile.DataLocation)
 
 			if err != nil {
 				return err
@@ -49,11 +49,11 @@ func InitSeafile(tl *TaskList[Pipe]) *Task[Pipe] {
 					SEAFILE_CLI_EXE,
 					"init",
 					"-d",
-					t.Pipe.Seafile.DataLocation,
+					P.Seafile.DataLocation,
 					"-c",
-					path.Join(t.Pipe.Seafile.DataLocation, "ccnet"),
+					path.Join(P.Seafile.DataLocation, "ccnet"),
 				).
-					ShouldRunAfter(func(c *Command[Pipe]) error {
+					ShouldRunAfter(func(c *Command) error {
 						c.Log.Infoln("Seafile data directory was empty so Seafile has been initiated.")
 
 						return nil
@@ -64,7 +64,7 @@ func InitSeafile(tl *TaskList[Pipe]) *Task[Pipe] {
 
 			return nil
 		}).
-		ShouldRunAfter(func(t *Task[Pipe]) error {
+		ShouldRunAfter(func(t *Task) error {
 			if err := t.RunCommandJobAsJobSequence(); err != nil {
 				t.Log.Debugln(err.Error())
 			}
@@ -73,10 +73,10 @@ func InitSeafile(tl *TaskList[Pipe]) *Task[Pipe] {
 		})
 }
 
-func Setup(tl *TaskList[Pipe]) *Task[Pipe] {
+func Setup(tl *TaskList) *Task {
 	return tl.CreateTask("init").
-		Set(func(t *Task[Pipe]) error {
-			files, err := os.ReadDir(t.Pipe.Seafile.MountLocation)
+		Set(func(t *Task) error {
+			files, err := os.ReadDir(P.Seafile.MountLocation)
 
 			if err != nil {
 				return err
@@ -84,11 +84,11 @@ func Setup(tl *TaskList[Pipe]) *Task[Pipe] {
 
 			for _, file := range files {
 				if file.IsDir() {
-					t.Pipe.Ctx.Libraries = append(t.Pipe.Ctx.Libraries, file.Name())
+					C.Libraries = append(C.Libraries, file.Name())
 				}
 			}
 
-			t.Log.Infof("Discovered libraries: %s", strings.Join(t.Pipe.Ctx.Libraries, ", "))
+			t.Log.Infof("Discovered libraries: %s", strings.Join(C.Libraries, ", "))
 
 			return nil
 		})

@@ -37,35 +37,36 @@ Mount your libraries to `$SEAFILE_MOUNT_LOCATION` in subfolders with the library
 
 | Flag / Environment |  Description   |  Type    | Required | Default |
 |---------------- | --------------- | --------------- |  --------------- |  --------------- |
-| `$LOG_LEVEL` | Define the log level for the application. | `String`<br/>`enum("panic", "fatal", "warn", "info", "debug", "trace")` | `false` | info |
-| `$ENV_FILE` | Environment files to inject. | `StringSlice` | `false` |  |
+| `$LOG_LEVEL` | Define the log level for the application. | `string`<br/>`enum("panic", "fatal", "warn", "info", "debug", "trace")` | `false` | <code>"info"</code> |
+| `$ENV_FILE` | Environment files to inject. | `string[]` | `false` | <code></code> |
 
 **Credentials**
 
 | Flag / Environment |  Description   |  Type    | Required | Default |
 |---------------- | --------------- | --------------- |  --------------- |  --------------- |
-| `$USERNAME` | Email address of the user that owns the libraries. | `String` | `true` |  |
-| `$PASSWORD` | Password of the user that owns the libraries. | `String` | `true` |  |
+| `$USERNAME` | Email address of the user that owns the libraries. | `string` | `true` | <code></code> |
+| `$PASSWORD` | Password of the user that owns the libraries. | `string` | `false` | <code></code> |
+| `$TOKEN` | Token of the user that owns the libraries. | `string` | `false` | <code></code> |
 
 **Health**
 
 | Flag / Environment |  Description   |  Type    | Required | Default |
 |---------------- | --------------- | --------------- |  --------------- |  --------------- |
-| `$HEALTH_CHECK_INTERVAL` | Health check interval for processes. | `Duration` | `false` | 10m0s |
-| `$HEALTH_STATUS_INTERVAL` | Interval for outputting current status. | `Duration` | `false` | 1h0m0s |
+| `$HEALTH_CHECK_INTERVAL` | Health check interval for processes. | `duration` | `false` | <code>10m0s</code> |
+| `$HEALTH_STATUS_INTERVAL` | Interval for outputting current status. | `duration` | `false` | <code>1h0m0s</code> |
 
 **Seafile**
 
 | Flag / Environment |  Description   |  Type    | Required | Default |
 |---------------- | --------------- | --------------- |  --------------- |  --------------- |
-| `$SEAFILE_MOUNT_LOCATION` | Mount location for the libraries. | `String` | `false` | /data |
-| `$SEAFILE_DATA_LOCATION` | Mount location for the data. | `String` | `false` | /seafile |
+| `$SEAFILE_MOUNT_LOCATION` | Mount location for the libraries. | `string` | `false` | <code>"/data"</code> |
+| `$SEAFILE_DATA_LOCATION` | Mount location for the data. | `string` | `false` | <code>"/seafile"</code> |
 
 **Server**
 
 | Flag / Environment |  Description   |  Type    | Required | Default |
 |---------------- | --------------- | --------------- |  --------------- |  --------------- |
-| `$SERVER_URL` | External url of the given Seafile server. | `String` | `true` |  |
+| `$SERVER_URL` | External url of the given Seafile server. | `string` | `true` | <code></code> |
 
 <!-- clidocsstop -->
 
