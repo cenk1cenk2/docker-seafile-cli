@@ -50,7 +50,7 @@ build:
 
 container:
   stage: container
-  extends: .container.build
+  extends: .container-build
   parallel:
     matrix:
       - CONTAINER_FILE_NAME: Dockerfile
