@@ -20,25 +20,13 @@ var Flags = []cli.Flag{
 
 	&cli.DurationFlag{
 		Category: category_health,
-		Name:     "health.check-interval",
-		Usage:    "Health check interval for processes.",
-		Required: false,
-		Sources: cli.NewValueSourceChain(
-			cli.EnvVar("HEALTH_CHECK_INTERVAL"),
-		),
-		Value:       10 * time.Minute,
-		Destination: &P.Health.CheckInterval,
-	},
-
-	&cli.DurationFlag{
-		Category: category_health,
 		Name:     "health.status-interval",
 		Usage:    "Interval for outputting current status.",
 		Required: false,
 		Sources: cli.NewValueSourceChain(
 			cli.EnvVar("HEALTH_STATUS_INTERVAL"),
 		),
-		Value:       time.Hour,
+		Value:       5 * time.Minute,
 		Destination: &P.Health.StatusInterval,
 	},
 

@@ -8,7 +8,6 @@ import (
 
 type (
 	Health struct {
-		CheckInterval  time.Duration
 		StatusInterval time.Duration
 	}
 
@@ -46,7 +45,7 @@ func New(p *Plumber) *TaskList {
 			return JobSequence(
 				Tasks(tl).Job(),
 				Services(tl).Job(),
-				JobBackground(HealthCheck(tl).Job()),
+				HealthCheck(tl).Job(),
 				JobWaitForTerminator(p),
 			)
 		})

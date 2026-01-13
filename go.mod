@@ -6,7 +6,6 @@ toolchain go1.25.4
 
 require (
 	github.com/cenk1cenk2/plumber/v6 v6.3.14
-	github.com/mitchellh/go-ps v1.0.0
 	github.com/urfave/cli/v3 v3.6.1
 )
 
@@ -29,4 +28,4 @@ require (
 	golang.org/x/text v0.33.0 // indirect
 )
 
-// replace gitlab.kilic.dev/libraries/plumber/v4 => /home/cenk/development/plumber
+// replace github.com/cenk1cenk2/plumber/v6 => ../plumber/
