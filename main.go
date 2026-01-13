@@ -1,29 +1,33 @@
 package main
 
 import (
-	"github.com/urfave/cli/v2"
+	"context"
 
+	"github.com/urfave/cli/v3"
+
+	. "github.com/cenk1cenk2/plumber/v6"
 	pipe "gitlab.kilic.dev/docker/seafile-cli/pipe"
-	. "gitlab.kilic.dev/libraries/plumber/v5"
 )
 
 func main() {
 	NewPlumber(
-		func(p *Plumber) *cli.App {
-			return &cli.App{
+		func(p *Plumber) *cli.Command {
+			return &cli.Command{
 				Name:        CLI_NAME,
 				Version:     VERSION,
 				Usage:       DESCRIPTION,
 				Description: DESCRIPTION,
-				Flags:       p.AppendFlags(pipe.Flags),
-				Before: func(_ *cli.Context) error {
+				Flags:       CombineFlags(pipe.Flags),
+				Before: func(ctx context.Context, _ *cli.Command) (context.Context, error) {
 					p.EnableTerminator()
 
-					return nil
+					return ctx, nil
 				},
-				Action: func(ctx *cli.Context) error {
-					return pipe.TL.RunJobs(
-						pipe.New(p).SetCliContext(ctx).Job(),
+				Action: func(ctx context.Context, _ *cli.Command) error {
+					return p.RunJobs(
+						CombineTaskLists(
+							pipe.New(p),
+						),
 					)
 				},
 			}
@@ -32,7 +36,6 @@ func main() {
 			MarkdownOutputFile: "CLI.md",
 			MarkdownBehead:     0,
 			ExcludeFlags:       true,
-			ExcludeHelpCommand: true,
 		}).
 		Run()
 }

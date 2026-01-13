@@ -3,12 +3,11 @@ package pipe
 import (
 	"time"
 
-	. "gitlab.kilic.dev/libraries/plumber/v5"
+	. "github.com/cenk1cenk2/plumber/v6"
 )
 
 type (
 	Health struct {
-		CheckInterval  time.Duration
 		StatusInterval time.Duration
 	}
 
@@ -28,8 +27,6 @@ type (
 	}
 
 	Pipe struct {
-		Ctx
-
 		Health
 		Server
 		Credentials
@@ -37,18 +34,19 @@ type (
 	}
 )
 
-var TL = TaskList[Pipe]{
-	Pipe: Pipe{},
-}
+var TL = TaskList{}
 
-func New(p *Plumber) *TaskList[Pipe] {
+var P = &Pipe{}
+var C = &Ctx{}
+
+func New(p *Plumber) *TaskList {
 	return TL.New(p).Set(
-		func(tl *TaskList[Pipe]) Job {
-			return tl.JobSequence(
+		func(tl *TaskList) Job {
+			return JobSequence(
 				Tasks(tl).Job(),
 				Services(tl).Job(),
 				HealthCheck(tl).Job(),
-				tl.JobWaitForTerminator(),
+				JobWaitForTerminator(p),
 			)
 		})
 }

@@ -1,18 +1,19 @@
-# syntax=docker/dockerfile-upstream:master-labs
-FROM debian:bookworm-slim
+# syntax=docker/dockerfile:1.20
+FROM debian:trixie-slim
 
 ARG BUILDOS
 ARG BUILDARCH
 
 RUN \
   apt-get update && \
-  apt-get install gnupg2 wget -y && \
-  # install tini
-  apt-get install tini -y && \
-  # install seafile client
-  wget https://linux-clients.seafile.com/seafile.asc -O /usr/share/keyrings/seafile-keyring.asc && \
-  echo 'deb [arch=amd64 signed-by=/usr/share/keyrings/seafile-keyring.asc] https://linux-clients.seafile.com/seafile-deb/bookworm/ stable main' | tee /etc/apt/sources.list.d/seafile.list && \
-  apt-get install -y seafile-cli procps curl grep && \
+  apt-get install --no-install-recommends -y \
+  ca-certificates \
+  tini \
+  seafile-cli \
+  procps \
+  curl \
+  grep && \
+  update-ca-certificates && \
   rm -rf /var/lib/apt/lists/*
 
 COPY --chmod=777 ./dist/pipe-${BUILDOS}-${BUILDARCH} /usr/bin/pipe

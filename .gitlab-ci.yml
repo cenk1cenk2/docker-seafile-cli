@@ -2,53 +2,76 @@
 stages:
   - install
   - build
-  - docker
+  - container
   - post
 
 variables:
-  GO_VERSION: 1.23-alpine
-  DOCKER_IMAGE_NAME: cenk1cenk2/seafile-cli
+  GO_VERSION: 1.25-alpine
+  CONTAINER_IMAGE_NAME: cenk1cenk2/seafile-cli
 
 include:
-  - project: devops/pipes
-    file: /templates/go.gitlab-ci.yml
+  - project: devops/pipelines
+    ref: go@1.5.2
+    file:
+      - /go/install.gitlab-ci.yml
+      - /go/lint.gitlab-ci.yml
+      - /go/build.gitlab-ci.yml
+    inputs:
+      version: 1.25-alpine
+  - project: devops/pipelines
+    ref: buildah@1.1.2
+    file:
+      - /buildah/build.gitlab-ci.yml
+      - /buildah/manifest.gitlab-ci.yml
+      - /buildah/registry-dockerhub.gitlab-ci.yml
+  - project: devops/pipelines
+    ref: docker@1.0.1
+    file:
+      - /docker/update-docker-hub-readme.gitlab-ci.yml
 
-  - project: devops/pipes
-    file: /templates/v2/docker-build-dockerhub.gitlab-ci.yml
+install:
+  stage: install
+  extends:
+    - .go-install
 
-  - project: devops/pipes
-    file: /templates/v2/docker-manifest-dockerhub.gitlab-ci.yml
+lint:
+  stage: build
+  extends:
+    - .go-lint
 
-  - project: devops/pipes
-    file: /templates/v2/update-docker-hub-readme.gitlab-ci.yml
+build:
+  stage: build
+  variables:
+    GO_BUILD_LINKER: -w -s
+    GO_BUILD_VARIABLES: |-
+      main.VERSION: '{{ now | date "2006-01-02T15:04:05Z0700" }}'
+  extends:
+    - .go-build
 
-docker-build:
-  stage: docker
-  extends: .docker-build-dockerhub
+container:
+  stage: container
+  extends: .container-build
   parallel:
     matrix:
-      - DOCKERFILE_NAME: Dockerfile
-        DOCKER_IMAGE_TAGS: latest-${GITLAB_CI_ARCH}
-        DOCKER_MANIFEST_TARGET: latest
+      - CONTAINER_FILE_NAME: Dockerfile
+        CONTAINER_IMAGE_TAGS: latest-${GITLAB_CI_ARCH}
+        CONTAINER_MANIFEST_TARGET: latest
         GITLAB_CI_ARCH:
           - amd64
-          - arm64
   dependencies:
     - build
-  only:
-    refs:
-      - schedules
-      - main
+  rules:
+    - if: '$CI_COMMIT_REF_NAME == "main" || $CI_PIPELINE_SOURCE == "schedule"'
+      when: always
 
-docker-manifest:
+manifest:
   stage: post
-  extends: .docker-manifest-dockerhub
+  extends: .container-manifest
   dependencies:
-    - docker-build
-  only:
-    refs:
-      - schedules
-      - main
+    - container
+  rules:
+    - if: '$CI_COMMIT_REF_NAME == "main" || $CI_PIPELINE_SOURCE == "schedule"'
+      when: always
 
 update-docker-hub-readme:
   stage: post
@@ -57,7 +80,6 @@ update-docker-hub-readme:
     README_DESCRIPTION: |
       Seafile client inside a Docker container that can continuously synchronize multiple libraries.
   dependencies: []
-  only:
-    refs:
-      - schedules
-      - main
+  rules:
+    - if: '$CI_COMMIT_REF_NAME == "main" || $CI_PIPELINE_SOURCE == "schedule"'
+      when: always

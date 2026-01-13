@@ -6,5 +6,5 @@ services:
       dockerfile: Dockerfile
     env_file: .env
     volumes:
-      - ./volumes/test/:/data/6665aa6e-ddd9-4fe2-9efd-034e9e397c85/
+      - ./volumes/test/:/data/9b016a7b-d01e-48e6-9657-3356acbd69fe/
       - ./volumes/seafile:/seafile
