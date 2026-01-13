@@ -65,7 +65,7 @@ container:
   dependencies:
     - build
   rules:
-    - if: '$CI_COMMIT_REF_NAME == "main" || $CI_PIPELINE_SOURCE == "schedule"'
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH || $CI_PIPELINE_SOURCE == "schedule"
       when: always
 
 manifest:
@@ -74,7 +74,7 @@ manifest:
   dependencies:
     - container
   rules:
-    - if: '$CI_COMMIT_REF_NAME == "main" || $CI_PIPELINE_SOURCE == "schedule"'
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH || $CI_PIPELINE_SOURCE == "schedule"
       when: always
 
 update-docker-hub-readme:
@@ -85,5 +85,5 @@ update-docker-hub-readme:
       Seafile client inside a Docker container that can continuously synchronize multiple libraries.
   dependencies: []
   rules:
-    - if: '$CI_COMMIT_REF_NAME == "main" || $CI_PIPELINE_SOURCE == "schedule"'
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH || $CI_PIPELINE_SOURCE == "schedule"
       when: always
