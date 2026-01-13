@@ -2,7 +2,7 @@ module gitlab.kilic.dev/docker/seafile-cli
 
 go 1.25.1
 
-toolchain go1.25.4
+toolchain go1.25.5
 
 require (
 	github.com/cenk1cenk2/plumber/v6 v6.3.14
