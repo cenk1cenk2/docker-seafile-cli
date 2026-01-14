@@ -5,7 +5,7 @@ go 1.25.1
 toolchain go1.25.5
 
 require (
-	github.com/cenk1cenk2/plumber/v6 v6.3.14
+	github.com/cenk1cenk2/plumber/v6 v6.3.15
 	github.com/urfave/cli/v3 v3.6.1
 )
 
