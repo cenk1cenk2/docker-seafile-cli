@@ -5,7 +5,7 @@ go 1.25.1
 toolchain go1.25.6
 
 require (
-	github.com/cenk1cenk2/plumber/v6 v6.3.15
+	github.com/cenk1cenk2/plumber/v6 v6.3.16
 	github.com/urfave/cli/v3 v3.6.1
 )
 
@@ -18,7 +18,7 @@ require (
 	github.com/go-task/slim-sprig/v3 v3.0.0 // indirect
 	github.com/joho/godotenv v1.5.1 // indirect
 	github.com/leodido/go-urn v1.4.0 // indirect
-	github.com/sirupsen/logrus v1.9.3 // indirect
+	github.com/sirupsen/logrus v1.9.4 // indirect
 	github.com/workanator/go-floc/v3 v3.0.1 // indirect
 	gitlab.kilic.dev/libraries/go-broadcaster v1.1.3 // indirect
 	gitlab.kilic.dev/libraries/go-utils/v2 v2.2.3 // indirect
