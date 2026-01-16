@@ -5,7 +5,7 @@ go 1.25.1
 toolchain go1.25.6
 
 require (
-	github.com/cenk1cenk2/plumber/v6 v6.3.16
+	github.com/cenk1cenk2/plumber/v6 v6.3.17
 	github.com/urfave/cli/v3 v3.6.1
 )
 
@@ -21,7 +21,7 @@ require (
 	github.com/sirupsen/logrus v1.9.4 // indirect
 	github.com/workanator/go-floc/v3 v3.0.1 // indirect
 	gitlab.kilic.dev/libraries/go-broadcaster v1.1.3 // indirect
-	gitlab.kilic.dev/libraries/go-utils/v2 v2.2.3 // indirect
+	gitlab.kilic.dev/libraries/go-utils/v2 v2.2.4 // indirect
 	golang.org/x/crypto v0.47.0 // indirect
 	golang.org/x/exp v0.0.0-20260112195511-716be5621a96 // indirect
 	golang.org/x/sys v0.40.0 // indirect
