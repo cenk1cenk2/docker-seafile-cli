@@ -103,4 +103,15 @@ var Flags = []cli.Flag{
 		),
 		Destination: &P.Seafile.DataLocation,
 	},
+
+	&cli.StringFlag{
+		Category: category_seafile,
+		Name:     "seafile.umask",
+		Usage:    "Umask to configure for the Seafile client.",
+		Required: false,
+		Sources: cli.NewValueSourceChain(
+			cli.EnvVar("SEAFILE_UMASK"),
+		),
+		Destination: &P.Seafile.Umask,
+	},
 }

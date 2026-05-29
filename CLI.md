@@ -25,8 +25,7 @@ Initiates the Seafile Client Daemon that will run in this container.
 
 | Flag / Environment |  Description   |  Type    | Required | Default |
 |---------------- | --------------- | --------------- |  --------------- |  --------------- |
-| `$HEALTH_CHECK_INTERVAL` | Health check interval for processes. | `duration` | `false` | <code>10m0s</code> |
-| `$HEALTH_STATUS_INTERVAL` | Interval for outputting current status. | `duration` | `false` | <code>1h0m0s</code> |
+| `$HEALTH_STATUS_INTERVAL` | Interval for outputting current status. | `duration` | `false` | <code>5m0s</code> |
 
 **Seafile**
 
@@ -34,6 +33,7 @@ Initiates the Seafile Client Daemon that will run in this container.
 |---------------- | --------------- | --------------- |  --------------- |  --------------- |
 | `$SEAFILE_MOUNT_LOCATION` | Mount location for the libraries. | `string` | `false` | <code>"/data"</code> |
 | `$SEAFILE_DATA_LOCATION` | Mount location for the data. | `string` | `false` | <code>"/seafile"</code> |
+| `$SEAFILE_UMASK` | Umask to configure for the Seafile client. | `string` | `false` | <code></code> |
 
 **Server**
 
