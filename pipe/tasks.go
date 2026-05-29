@@ -14,6 +14,7 @@ func Tasks(tl *TaskList) *Task {
 			return JobSequence(
 				Secrets(tl).Job(),
 				InitSeafile(tl).Job(),
+				ConfigureSeafile(tl).Job(),
 				Setup(tl).Job(),
 			)
 		})
@@ -70,6 +71,38 @@ func InitSeafile(tl *TaskList) *Task {
 			}
 
 			return nil
+		})
+}
+
+func ConfigureSeafile(tl *TaskList) *Task {
+	return tl.CreateTask("seafile", "config").
+		Set(func(t *Task) error {
+			if P.Seafile.Umask == "" {
+				return nil
+			}
+
+			t.CreateCommand(
+				SEAFILE_CLI_EXE,
+				"config",
+				"-c",
+				path.Join(P.Seafile.DataLocation, "ccnet"),
+				"-k",
+				"umask",
+				"-v",
+				P.Seafile.Umask,
+			).
+				ShouldRunAfter(func(c *Command) error {
+					c.Log.Infof("Configured Seafile umask: %s", P.Seafile.Umask)
+
+					return nil
+				}).
+				SetLogLevel(LOG_LEVEL_DEBUG, LOG_LEVEL_DEBUG, LOG_LEVEL_DEBUG).
+				AddSelfToTheTask()
+
+			return nil
+		}).
+		ShouldRunAfter(func(t *Task) error {
+			return t.RunCommandJobAsJobSequence()
 		})
 }
 

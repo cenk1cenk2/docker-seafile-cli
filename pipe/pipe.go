@@ -24,6 +24,7 @@ type (
 	Seafile struct {
 		MountLocation string `validate:"dir"`
 		DataLocation  string `validate:"dir"`
+		Umask         string
 	}
 
 	Pipe struct {
