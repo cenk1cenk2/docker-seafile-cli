@@ -1,8 +1,5 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": [
-    "local>renovate/renovate-config:default/default",
-    "local>renovate/renovate-config:default/datasource-docker-automerge-minor(docker/dockerfile)"
-  ],
+  "extends": ["local>renovate/renovate-config:default/default"],
   "ignorePresets": []
 }
