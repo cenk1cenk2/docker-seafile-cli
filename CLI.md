@@ -28,6 +28,7 @@ Initiates the Seafile Client Daemon that will run in this container.
 | Flag / Environment | Description | Type | Default |
 | --- | --- | --- | --- |
 | `$HEALTH_STATUS_INTERVAL` | Interval for outputting current status. | `duration` | `5m0s` |
+| `$HEALTH_EXIT_ON_FAILURE` | Exit the process when a health check fails, so the orchestrator can restart the container. | `bool` | `true` |
 
 **Seafile**
 
