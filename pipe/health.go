@@ -15,16 +15,27 @@ import (
 func HealthCheck(tl *TaskList) *Task {
 	return tl.CreateTask("health", "parent").
 		SetJobWrapper(func(_ Job, t *Task) Job {
+			check := JobParallel(
+				HealthCheckStatus(tl).Job(),
+				HealthCheckRepositories(tl).Job(),
+			)
+
+			if P.Health.ExitOnFailure {
+				check = func(ctx context.Context) error {
+					if err := check(ctx); err != nil {
+						t.SendFatal(err)
+					}
+
+					return nil
+				}
+			} else {
+				check = GuardResume(check, t.Log)
+			}
+
 			return JobBackground(
 				JobDelay(
 					JobLoopWithWaitAfter(
-						GuardResume(
-							JobParallel(
-								HealthCheckStatus(tl).Job(),
-								HealthCheckRepositories(tl).Job(),
-							),
-							t.Log,
-						),
+						check,
 						P.Health.StatusInterval,
 					),
 					15*time.Second,
