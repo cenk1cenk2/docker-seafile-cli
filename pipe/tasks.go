@@ -1,11 +1,13 @@
 package pipe
 
 import (
+	"context"
+	"fmt"
 	"os"
 	"path"
 	"strings"
 
-	. "github.com/cenk1cenk2/plumber/v6"
+	. "github.com/cenk1cenk2/plumber/v7"
 )
 
 func Tasks(tl *TaskList) *Task {
@@ -22,7 +24,7 @@ func Tasks(tl *TaskList) *Task {
 
 func Secrets(tl *TaskList) *Task {
 	return tl.CreateTask("secrets").
-		Set(func(t *Task) error {
+		Set(func(_ context.Context, t *Task) error {
 			t.Plumber.AppendSecrets(P.Credentials.Username)
 
 			if P.Credentials.Password != "" {
@@ -38,7 +40,7 @@ func Secrets(tl *TaskList) *Task {
 
 func InitSeafile(tl *TaskList) *Task {
 	return tl.CreateTask("seafile").
-		Set(func(t *Task) error {
+		Set(func(_ context.Context, t *Task) error {
 			files, err := os.ReadDir(P.Seafile.DataLocation)
 
 			if err != nil {
@@ -54,20 +56,20 @@ func InitSeafile(tl *TaskList) *Task {
 					"-c",
 					path.Join(P.Seafile.DataLocation, "ccnet"),
 				).
-					ShouldRunAfter(func(c *Command) error {
-						c.Log.Infoln("Seafile data directory was empty so Seafile has been initiated.")
+					ShouldRunAfter(func(_ context.Context, c *Command) error {
+						c.Log.Info("Seafile data directory was empty so Seafile has been initiated.")
 
 						return nil
 					}).
-					SetLogLevel(LOG_LEVEL_DEBUG, LOG_LEVEL_DEBUG, LOG_LEVEL_DEBUG).
+					SetLogLevel(LogLevelDebug, LogLevelDebug, LogLevelDebug).
 					AddSelfToTheTask()
 			}
 
 			return nil
 		}).
-		ShouldRunAfter(func(t *Task) error {
-			if err := t.RunCommandJobAsJobSequence(); err != nil {
-				t.Log.Debugln(err.Error())
+		ShouldRunAfter(func(ctx context.Context, t *Task) error {
+			if err := t.RunCommandJobAsJobSequence(ctx); err != nil {
+				t.Log.Debug(err.Error())
 			}
 
 			return nil
@@ -76,7 +78,7 @@ func InitSeafile(tl *TaskList) *Task {
 
 func ConfigureSeafile(tl *TaskList) *Task {
 	return tl.CreateTask("seafile", "config").
-		Set(func(t *Task) error {
+		Set(func(_ context.Context, t *Task) error {
 			if P.Seafile.Umask == "" {
 				return nil
 			}
@@ -91,24 +93,24 @@ func ConfigureSeafile(tl *TaskList) *Task {
 				"-v",
 				P.Seafile.Umask,
 			).
-				ShouldRunAfter(func(c *Command) error {
-					c.Log.Infof("Configured Seafile umask: %s", P.Seafile.Umask)
+				ShouldRunAfter(func(_ context.Context, c *Command) error {
+					c.Log.Info(fmt.Sprintf("Configured Seafile umask: %s", P.Seafile.Umask))
 
 					return nil
 				}).
-				SetLogLevel(LOG_LEVEL_DEBUG, LOG_LEVEL_DEBUG, LOG_LEVEL_DEBUG).
+				SetLogLevel(LogLevelDebug, LogLevelDebug, LogLevelDebug).
 				AddSelfToTheTask()
 
 			return nil
 		}).
-		ShouldRunAfter(func(t *Task) error {
-			return t.RunCommandJobAsJobSequence()
+		ShouldRunAfter(func(ctx context.Context, t *Task) error {
+			return t.RunCommandJobAsJobSequence(ctx)
 		})
 }
 
 func Setup(tl *TaskList) *Task {
 	return tl.CreateTask("init").
-		Set(func(t *Task) error {
+		Set(func(_ context.Context, t *Task) error {
 			files, err := os.ReadDir(P.Seafile.MountLocation)
 
 			if err != nil {
@@ -121,7 +123,7 @@ func Setup(tl *TaskList) *Task {
 				}
 			}
 
-			t.Log.Infof("Discovered libraries: %s", strings.Join(C.Libraries, ", "))
+			t.Log.Info(fmt.Sprintf("Discovered libraries: %s", strings.Join(C.Libraries, ", ")))
 
 			return nil
 		})

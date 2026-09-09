@@ -5,7 +5,7 @@ import (
 
 	"github.com/urfave/cli/v3"
 
-	. "github.com/cenk1cenk2/plumber/v6"
+	. "github.com/cenk1cenk2/plumber/v7"
 	pipe "gitlab.kilic.dev/docker/seafile-cli/pipe"
 )
 
@@ -18,6 +18,7 @@ func main() {
 				Usage:       DESCRIPTION,
 				Description: DESCRIPTION,
 				Flags:       CombineFlags(pipe.Flags),
+				Commands:    []*cli.Command{DocsCommand(p)},
 				Before: func(ctx context.Context, _ *cli.Command) (context.Context, error) {
 					p.EnableTerminator()
 
@@ -33,9 +34,10 @@ func main() {
 			}
 		}).
 		SetDocumentationOptions(DocumentationOptions{
-			MarkdownOutputFile: "CLI.md",
-			MarkdownBehead:     0,
-			ExcludeFlags:       true,
+			MarkdownOutputFile:         "CLI.md",
+			EmbeddedMarkdownOutputFile: "README.md",
+			MarkdownBehead:             0,
+			ExcludeFlags:               true,
 		}).
 		Run()
 }

@@ -38,9 +38,12 @@ tasks:
     interactive: true
     env:
       LOG_LEVEL: trace
+      # urfave/cli validates the required flags of the root command even for the docs command
+      SERVER_URL: https://seafile.invalid
+      USERNAME: docs
     cmds:
-      - go run . MARKDOWN_DOC
-      - go run . MARKDOWN_EMBED
+      - go run . docs markdown --output CLI.md
+      - go run . docs embed --output README.md
 
   help:
     desc: Generates help for the application.
