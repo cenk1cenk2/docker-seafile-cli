@@ -1,9 +1,10 @@
 package pipe
 
 import (
+	"context"
 	"path"
 
-	. "github.com/cenk1cenk2/plumber/v6"
+	. "github.com/cenk1cenk2/plumber/v7"
 )
 
 func Services(tl *TaskList) *Task {
@@ -18,7 +19,7 @@ func Services(tl *TaskList) *Task {
 
 func RunSeafDaemon(tl *TaskList) *Task {
 	return tl.CreateTask("seaf-daemon").
-		Set(func(t *Task) error {
+		Set(func(_ context.Context, t *Task) error {
 			t.CreateCommand(
 				SEAFILE_CLI_EXE,
 				"start",
@@ -26,17 +27,17 @@ func RunSeafDaemon(tl *TaskList) *Task {
 				path.Join(P.Seafile.DataLocation, "ccnet"),
 			).
 				EnableTerminator().
-				SetLogLevel(LOG_LEVEL_DEBUG, LOG_LEVEL_DEBUG, LOG_LEVEL_DEBUG).
+				SetLogLevel(LogLevelDebug, LogLevelDebug, LogLevelDebug).
 				AddSelfToTheTask()
 
 			return nil
 		}).
-		ShouldRunAfter(func(t *Task) error {
-			if err := t.RunCommandJobAsJobSequence(); err != nil {
+		ShouldRunAfter(func(ctx context.Context, t *Task) error {
+			if err := t.RunCommandJobAsJobSequence(ctx); err != nil {
 				return err
 			}
 
-			t.Log.Infoln("Started Seafile Daemon.")
+			t.Log.Info("Started Seafile Daemon.")
 
 			return nil
 		})
@@ -44,10 +45,10 @@ func RunSeafDaemon(tl *TaskList) *Task {
 
 func RunSeafileClient(tl *TaskList) *Task {
 	return tl.CreateTask("seafile-client").
-		Set(func(t *Task) error {
+		Set(func(_ context.Context, t *Task) error {
 			for _, library := range C.Libraries {
 				t.CreateSubtask(library).
-					Set(func(t *Task) error {
+					Set(func(_ context.Context, t *Task) error {
 						// desync first
 						t.CreateCommand(
 							SEAFILE_CLI_EXE,
@@ -60,7 +61,7 @@ func RunSeafileClient(tl *TaskList) *Task {
 							"-c",
 							path.Join(P.Seafile.DataLocation, "ccnet"),
 						).
-							SetLogLevel(LOG_LEVEL_DEBUG, LOG_LEVEL_DEBUG, LOG_LEVEL_DEBUG).
+							SetLogLevel(LogLevelDebug, LogLevelDebug, LogLevelDebug).
 							AddSelfToTheTask()
 
 							// sync
@@ -81,7 +82,7 @@ func RunSeafileClient(tl *TaskList) *Task {
 							"-u",
 							P.Credentials.Username,
 						).
-							Set(func(c *Command) error {
+							Set(func(_ context.Context, c *Command) error {
 								if P.Credentials.Token != "" {
 									c.AppendArgs("-T", P.Credentials.Token)
 								} else if P.Credentials.Password != "" {
@@ -90,26 +91,26 @@ func RunSeafileClient(tl *TaskList) *Task {
 
 								return nil
 							}).
-							SetLogLevel(LOG_LEVEL_DEFAULT, LOG_LEVEL_DEFAULT, LOG_LEVEL_DEFAULT).
+							SetLogLevel(LogLevelDefault, LogLevelDefault, LogLevelDefault).
 							EnableTerminator().
 							AddSelfToTheTask()
 
 						return nil
 					}).
-					ShouldRunAfter(func(t *Task) error {
-						return t.RunCommandJobAsJobSequence()
+					ShouldRunAfter(func(ctx context.Context, t *Task) error {
+						return t.RunCommandJobAsJobSequence(ctx)
 					}).
 					AddSelfToTheParentAsParallel()
 			}
 
 			return nil
 		}).
-		ShouldRunAfter(func(t *Task) error {
-			if err := t.RunSubtasks(); err != nil {
+		ShouldRunAfter(func(ctx context.Context, t *Task) error {
+			if err := t.RunSubtasks(ctx); err != nil {
 				return err
 			}
 
-			t.Log.Infoln("Started Seafile Client for library.")
+			t.Log.Info("Started Seafile Client for library.")
 
 			return nil
 		})
