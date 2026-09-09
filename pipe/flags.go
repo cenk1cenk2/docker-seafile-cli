@@ -30,6 +30,18 @@ var Flags = []cli.Flag{
 		Destination: &P.Health.StatusInterval,
 	},
 
+	&cli.BoolFlag{
+		Category: category_health,
+		Name:     "health.exit-on-failure",
+		Usage:    "Exit the process when a health check fails, so the orchestrator can restart the container.",
+		Required: false,
+		Sources: cli.NewValueSourceChain(
+			cli.EnvVar("HEALTH_EXIT_ON_FAILURE"),
+		),
+		Value:       true,
+		Destination: &P.Health.ExitOnFailure,
+	},
+
 	// category_server
 
 	&cli.StringFlag{

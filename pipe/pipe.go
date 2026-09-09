@@ -9,6 +9,7 @@ import (
 type (
 	Health struct {
 		StatusInterval time.Duration
+		ExitOnFailure  bool
 	}
 
 	Server struct {

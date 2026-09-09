@@ -57,6 +57,7 @@ Mount your libraries to `$SEAFILE_MOUNT_LOCATION` in subfolders with the library
 | Flag / Environment | Description | Type | Default |
 | --- | --- | --- | --- |
 | `$HEALTH_STATUS_INTERVAL` | Interval for outputting current status. | `duration` | `5m0s` |
+| `$HEALTH_EXIT_ON_FAILURE` | Exit the process when a health check fails, so the orchestrator can restart the container. | `bool` | `true` |
 
 **Seafile**
 
