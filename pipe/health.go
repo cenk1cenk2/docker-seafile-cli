@@ -1,6 +1,7 @@
 package pipe
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"path"
@@ -8,53 +9,54 @@ import (
 	"strings"
 	"time"
 
-	. "github.com/cenk1cenk2/plumber/v6"
+	. "github.com/cenk1cenk2/plumber/v7"
 )
 
 func HealthCheck(tl *TaskList) *Task {
 	return tl.CreateTask("health", "parent").
-		SetJobWrapper(func(job Job, _ *Task) Job {
+		SetJobWrapper(func(_ Job, t *Task) Job {
 			return JobBackground(
-				// BUG: something wrong with context finisihing early on the plumber side
-				GuardAlways(
-					JobDelay(
-						JobLoopWithWaitAfter(
+				JobDelay(
+					JobLoopWithWaitAfter(
+						GuardResume(
 							JobParallel(
 								HealthCheckStatus(tl).Job(),
 								HealthCheckRepositories(tl).Job(),
 							),
-							P.Health.StatusInterval,
+							t.Log,
 						),
-						15*time.Second,
+						P.Health.StatusInterval,
 					),
+					15*time.Second,
 				),
+				t.Log,
 			)
 		})
 }
 
 func HealthCheckStatus(tl *TaskList) *Task {
 	return tl.CreateTask("health", "status").
-		Set(func(t *Task) error {
+		Set(func(_ context.Context, t *Task) error {
 			t.CreateCommand(
 				SEAFILE_CLI_EXE,
 				"status",
 				"-c",
 				path.Join(P.Seafile.DataLocation, "ccnet"),
 			).
-				SetLogLevel(LOG_LEVEL_INFO, LOG_LEVEL_WARN, LOG_LEVEL_DEBUG).
+				SetLogLevel(LogLevelInfo, LogLevelWarn, LogLevelDebug).
 				AddSelfToTheTask()
 
 			return nil
 		}).
-		ShouldRunAfter(func(t *Task) error {
-			if err := t.RunCommandJobAsJobSequence(); err != nil {
+		ShouldRunAfter(func(ctx context.Context, t *Task) error {
+			if err := t.RunCommandJobAsJobSequence(ctx); err != nil {
 				return err
 			}
 
-			t.Log.Debugf(
+			t.Log.Debug(fmt.Sprintf(
 				"Next status check in: %s",
 				P.Health.StatusInterval.String(),
-			)
+			))
 
 			return nil
 		})
@@ -62,7 +64,7 @@ func HealthCheckStatus(tl *TaskList) *Task {
 
 func HealthCheckRepositories(tl *TaskList) *Task {
 	return tl.CreateTask("health", "repositories").
-		Set(func(t *Task) error {
+		Set(func(_ context.Context, t *Task) error {
 			t.CreateCommand(
 				SEAFILE_CLI_EXE,
 				"list",
@@ -71,7 +73,7 @@ func HealthCheckRepositories(tl *TaskList) *Task {
 				"--json",
 			).
 				EnableStreamRecording().
-				ShouldRunAfter(func(c *Command) error {
+				ShouldRunAfter(func(_ context.Context, c *Command) error {
 					var libraries []SeafCliList
 					if err := json.Unmarshal([]byte(strings.Join(c.GetCombinedStream(), "\n")), &libraries); err != nil {
 						return fmt.Errorf("failed to parse seafile cli list output: %w", err)
@@ -87,20 +89,20 @@ func HealthCheckRepositories(tl *TaskList) *Task {
 
 					return nil
 				}).
-				SetLogLevel(LOG_LEVEL_DEBUG, LOG_LEVEL_DEBUG, LOG_LEVEL_DEBUG).
+				SetLogLevel(LogLevelDebug, LogLevelDebug, LogLevelDebug).
 				AddSelfToTheTask()
 
 			return nil
 		}).
-		ShouldRunAfter(func(t *Task) error {
-			if err := t.RunCommandJobAsJobSequence(); err != nil {
+		ShouldRunAfter(func(ctx context.Context, t *Task) error {
+			if err := t.RunCommandJobAsJobSequence(ctx); err != nil {
 				return err
 			}
 
-			t.Log.Debugf(
+			t.Log.Debug(fmt.Sprintf(
 				"Next repositories check in: %s",
 				P.Health.StatusInterval.String(),
-			)
+			))
 
 			return nil
 		})
