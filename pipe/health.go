@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"path"
 	"slices"
-	"strings"
 	"time"
 
 	. "github.com/cenk1cenk2/plumber/v7"
@@ -76,6 +75,8 @@ func HealthCheckStatus(tl *TaskList) *Task {
 func HealthCheckRepositories(tl *TaskList) *Task {
 	return tl.CreateTask("health", "repositories").
 		Set(func(_ context.Context, t *Task) error {
+			var output string
+
 			t.CreateCommand(
 				SEAFILE_CLI_EXE,
 				"list",
@@ -83,10 +84,10 @@ func HealthCheckRepositories(tl *TaskList) *Task {
 				path.Join(P.Seafile.DataLocation, "ccnet"),
 				"--json",
 			).
-				EnableStreamRecording().
+				CaptureOutput(&output).
 				ShouldRunAfter(func(_ context.Context, c *Command) error {
 					var libraries []SeafCliList
-					if err := json.Unmarshal([]byte(strings.Join(c.GetCombinedStream(), "\n")), &libraries); err != nil {
+					if err := json.Unmarshal([]byte(output), &libraries); err != nil {
 						return fmt.Errorf("failed to parse seafile cli list output: %w", err)
 					}
 
