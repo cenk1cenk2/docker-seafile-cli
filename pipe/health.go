@@ -21,8 +21,10 @@ func HealthCheck(tl *TaskList) *Task {
 			)
 
 			if P.Health.ExitOnFailure {
+				run := check
+
 				check = func(ctx context.Context) error {
-					if err := check(ctx); err != nil {
+					if err := run(ctx); err != nil {
 						t.SendFatal(err)
 					}
 
