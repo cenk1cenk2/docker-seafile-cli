@@ -48,23 +48,17 @@ func HealthCheck(tl *TaskList) *Task {
 
 func HealthCheckStatus(tl *TaskList) *Task {
 	return tl.CreateTask("health", "status").
-		Set(func(_ context.Context, t *Task) error {
-			t.CreateCommand(
+		Set(func(ctx context.Context, t *Task) error {
+			return t.CreateCommand(
 				SEAFILE_CLI_EXE,
 				"status",
 				"-c",
 				path.Join(P.Seafile.DataLocation, "ccnet"),
 			).
 				SetLogLevel(LogLevelInfo, LogLevelWarn, LogLevelDebug).
-				AddSelfToTheTask()
-
-			return nil
+				Job()(ctx)
 		}).
-		ShouldRunAfter(func(ctx context.Context, t *Task) error {
-			if err := t.RunCommandJobAsJobSequence(ctx); err != nil {
-				return err
-			}
-
+		ShouldRunAfter(func(_ context.Context, t *Task) error {
 			t.Log.Debug(fmt.Sprintf(
 				"Next status check in: %s",
 				P.Health.StatusInterval.String(),
@@ -76,10 +70,10 @@ func HealthCheckStatus(tl *TaskList) *Task {
 
 func HealthCheckRepositories(tl *TaskList) *Task {
 	return tl.CreateTask("health", "repositories").
-		Set(func(_ context.Context, t *Task) error {
+		Set(func(ctx context.Context, t *Task) error {
 			var output string
 
-			t.CreateCommand(
+			return t.CreateCommand(
 				SEAFILE_CLI_EXE,
 				"list",
 				"-c",
@@ -104,15 +98,9 @@ func HealthCheckRepositories(tl *TaskList) *Task {
 					return nil
 				}).
 				SetLogLevel(LogLevelDebug, LogLevelDebug, LogLevelDebug).
-				AddSelfToTheTask()
-
-			return nil
+				Job()(ctx)
 		}).
-		ShouldRunAfter(func(ctx context.Context, t *Task) error {
-			if err := t.RunCommandJobAsJobSequence(ctx); err != nil {
-				return err
-			}
-
+		ShouldRunAfter(func(_ context.Context, t *Task) error {
 			t.Log.Debug(fmt.Sprintf(
 				"Next repositories check in: %s",
 				P.Health.StatusInterval.String(),
